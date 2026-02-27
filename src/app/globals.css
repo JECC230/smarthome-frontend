@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+:root {
+  --background: #000000;
+  --foreground: #ededed;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- CLASES PERSONALIZADAS (CSS Estándar para evitar errores de compilación) --- */
+
+.input-apple {
+  width: 100%;
+  background-color: #1c1c1e;
+  border: 1px solid rgba(255, 255, 255, 0.1); /* border-white/10 */
+  border-radius: 0.75rem; /* rounded-xl */
+  padding: 1rem;
+  color: white;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.input-apple:focus {
+  border-color: rgba(59, 130, 246, 0.5); /* focus:border-blue-500/50 */
+  background-color: #252528;
+}
+
+.btn-primary {
+  background-color: #2563eb; /* bg-blue-600 */
+  color: white;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s;
+  box-shadow: 0 10px 15px -3px rgba(30, 58, 138, 0.2);
+}
+
+.btn-primary:hover {
+  background-color: #3b82f6; /* hover:bg-blue-500 */
+}
+
+.btn-primary:active {
+  transform: scale(0.95);
+}
+
+.card-apple {
+  background-color: #1c1c1e;
+  border-radius: 1rem; /* rounded-2xl */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+}
+
+/* --- ANIMACIONES --- */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.animate-fade-in-down {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-scale-up {
+  animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
