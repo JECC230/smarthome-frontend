@@ -30,14 +30,14 @@ export default function Navbar() {
       <nav className="bg-black w-full h-20 flex items-center px-6 md:px-8 border-b border-white/5 relative z-50">
         <div className="flex items-center w-full max-w-7xl mx-auto justify-between">
           
-          {/* LOGO IZQUIERDA */}
-          <div className="flex items-center gap-3">
+          {/* LOGO IZQUIERDA  */}
+          <Link href="/inicio" className="flex items-center gap-3 cursor-pointer transition-opacity hover:opacity-80">
             <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-xl shadow-lg shadow-blue-900/20">
               🏠
             </div>
             {/* Ocultamos el texto en móviles muy pequeños para dar espacio */}
             <span className="text-xl font-bold text-white tracking-tight hidden sm:block">SmartHome</span>
-          </div>
+          </Link>
 
           {/* LINKS CENTRO (Solo visibles en Desktop) */}
           <div className="hidden md:flex bg-[#1c1c1e] rounded-full px-2 py-1.5 gap-1 border border-white/5">
@@ -98,7 +98,7 @@ export default function Navbar() {
         )}
       </nav>
 
-      {/* MODAL DE CONFIRMACIÓN (Exactamente como lo tenías) */}
+      {/* MODAL DE CONFIRMACIÓN  */}
       {showConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <div className="bg-[#1c1c1e] w-full max-w-sm rounded-[2.5rem] border border-white/10 p-8 shadow-2xl animate-in zoom-in-95 duration-200 text-center">
