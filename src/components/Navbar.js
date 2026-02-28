@@ -2,18 +2,19 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { clearToken } from '@/lib/auth'; // 
+import { clearToken } from '@/lib/auth';
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   
-  // Estado para controlar el modal de confirmación
+  // Estados: Modal de salida y Menú móvil
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); 
 
   const handleLogout = () => {
-    clearToken(); // [cite: 261-268]
-    router.replace('/login'); // [cite: 160]
+    clearToken();
+    router.replace('/login');
   };
 
   const navItems = [
@@ -26,7 +27,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="bg-black w-full h-20 flex items-center px-8 border-b border-white/5 relative z-40">
+      <nav className="bg-black w-full h-20 flex items-center px-6 md:px-8 border-b border-white/5 relative z-50">
         <div className="flex items-center w-full max-w-7xl mx-auto justify-between">
           
           {/* LOGO IZQUIERDA */}
@@ -34,11 +35,12 @@ export default function Navbar() {
             <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-xl shadow-lg shadow-blue-900/20">
               🏠
             </div>
-            <span className="text-xl font-bold text-white tracking-tight">SmartHome</span>
+            {/* Ocultamos el texto en móviles muy pequeños para dar espacio */}
+            <span className="text-xl font-bold text-white tracking-tight hidden sm:block">SmartHome</span>
           </div>
 
-          {/* LINKS CENTRO (ESTILO CÁPSULA) */}
-          <div className="bg-[#1c1c1e] rounded-full px-2 py-1.5 flex gap-1 border border-white/5">
+          {/* LINKS CENTRO (Solo visibles en Desktop) */}
+          <div className="hidden md:flex bg-[#1c1c1e] rounded-full px-2 py-1.5 gap-1 border border-white/5">
             {navItems.map((item) => (
               <Link 
                 key={item.path} 
@@ -54,17 +56,49 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* BOTÓN SALIR */}
+          {/* BOTÓN SALIR (Desktop) */}
           <button 
             onClick={() => setShowConfirm(true)}
-            className="text-xs font-bold text-gray-500 hover:text-red-500 transition-colors uppercase tracking-widest"
+            className="hidden md:block text-xs font-bold text-gray-500 hover:text-red-500 transition-colors uppercase tracking-widest"
           >
             SALIR
           </button>
+
+          {/* BOTÓN HAMBURGUESA (Solo visible en Móvil) */}
+          <button 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden text-white p-2 text-2xl"
+          >
+            {isMenuOpen ? '✕' : '☰'}
+          </button>
         </div>
+
+        {/* MENÚ DESPLEGABLE MÓVIL */}
+        {isMenuOpen && (
+          <div className="absolute top-20 left-0 w-full bg-black/95 backdrop-blur-md border-b border-white/10 flex flex-col p-6 gap-2 md:hidden animate-in slide-in-from-top-5">
+            {navItems.map((item) => (
+              <Link 
+                key={item.path} 
+                href={item.path}
+                onClick={() => setIsMenuOpen(false)}
+                className={`p-4 rounded-2xl text-lg font-bold transition-all ${
+                  pathname.startsWith(item.path) ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 bg-white/5'
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+            <button 
+              onClick={() => { setIsMenuOpen(false); setShowConfirm(true); }}
+              className="p-4 rounded-2xl text-lg font-bold text-red-500 text-left bg-red-500/10 mt-2"
+            >
+              SALIR DEL SISTEMA
+            </button>
+          </div>
+        )}
       </nav>
 
-      {/* MODAL DE CONFIRMACIÓN CERRAR SESIÓN */}
+      {/* MODAL DE CONFIRMACIÓN (Exactamente como lo tenías) */}
       {showConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <div className="bg-[#1c1c1e] w-full max-w-sm rounded-[2.5rem] border border-white/10 p-8 shadow-2xl animate-in zoom-in-95 duration-200 text-center">
