@@ -71,7 +71,7 @@ export default function InicioPage() {
       {/*  TÍTULO DE BIENVENIDA */}
       <div className="mb-12">
         <h1 className="text-4xl font-extrabold text-white tracking-tight">Panel de Control</h1>
-        <p className="text-gray-500 mt-2 font-medium">Estado general de la Casa 10</p>
+        <p className="text-gray-500 mt-2 font-medium">Estado general de la Casa</p>
       </div>
       
       <StatusBox loading={loading} />
@@ -93,7 +93,7 @@ export default function InicioPage() {
           </div>
           <div className="flex items-baseline gap-1">
             <h2 className="text-6xl font-bold text-white tracking-tighter">{resumen.productos}</h2>
-            <span className="text-gray-600 text-xs">SKUs</span>
+            <span className="text-gray-600 text-xs">Total</span>
           </div>
         </div>
 
