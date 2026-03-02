@@ -44,13 +44,11 @@ export default function ProductosPage() {
     return () => clearTimeout(delayDebounce);
   }, [pagina, busqueda]);
 
-  // Función para sumar/restar desde la tarjeta
   const actualizarStockRapido = async (e, id, currentStock, change) => {
-    e.stopPropagation(); // Evita que se abra el detalle del producto
+    e.stopPropagation(); 
     const nuevoStock = currentStock + change;
-    if (nuevoStock < 0) return;
+    if (nuevoStock < 0) return; // 🔒 Aquí ya estábamos protegidos contra negativos
 
-    // Actualizamos la interfaz inmediatamente (Optimistic UI)
     setProductos(prev => prev.map(p => p.id === id ? { ...p, stock: nuevoStock } : p));
 
     try {
@@ -59,7 +57,7 @@ export default function ProductosPage() {
         body: JSON.stringify({ stock: nuevoStock })
       });
     } catch (err) {
-      cargarProductos(); // Si falla en el server, recargamos la lista real
+      cargarProductos(); 
     }
   };
 
@@ -71,11 +69,13 @@ export default function ProductosPage() {
         method: 'POST', 
         body: JSON.stringify({ 
           ...form, 
-          stock: Number(form.stock), 
-          stock_minimo: Number(form.stock_minimo) 
+          descripcion: form.descripcion, 
+          // 🔒 Doble validación al enviar por si acaso
+          stock: Math.max(0, Number(form.stock)), 
+          stock_minimo: Math.max(0, Number(form.stock_minimo)) 
         }) 
       });
-      setSuccess("Producto creado");
+      setSuccess("Producto creado exitosamente");
       setTimeout(() => {
         setMostrarModalCrear(false);
         setForm({ nombre: '', categoria: '', marca: '', descripcion: '', stock: '', stock_minimo: 1 });
@@ -89,7 +89,6 @@ export default function ProductosPage() {
     }
   };
 
-  //  Lógica de ordenamiento local
   let productosMostrar = [...productos];
   if (orden === 'az') productosMostrar.sort((a,b) => a.nombre.localeCompare(b.nombre));
   if (orden === 'menor') productosMostrar.sort((a,b) => a.stock - b.stock);
@@ -100,7 +99,7 @@ export default function ProductosPage() {
       <div className="max-w-5xl mx-auto px-6 pt-8 mb-8 flex justify-between items-center gap-4">
           <div className="flex-1 max-w-md relative">
              <input 
-                type="text" placeholder="Buscar en todo la casa..." 
+                type="text" placeholder="Buscar en toda la casa..." 
                 className="w-full bg-[#1c1c1e] text-white px-5 py-3 rounded-xl border border-white/10 outline-none focus:border-blue-500/50 transition-all shadow-sm"
                 value={busqueda} 
                 onChange={(e) => {
@@ -111,7 +110,6 @@ export default function ProductosPage() {
           </div>
 
           <div className="flex items-center gap-3 relative">
-            {/*  Botón de Filtro/Orden */}
             <button 
               onClick={() => setMostrarMenuOrden(!mostrarMenuOrden)}
               className="bg-[#1c1c1e] p-3 rounded-xl border border-white/10 hover:bg-[#252528] transition"
@@ -155,7 +153,6 @@ export default function ProductosPage() {
                         </div>
                         <div className="mt-4 pt-4 border-t border-white/5 flex justify-between items-center">
                             <span className="text-xs text-gray-500">Stock</span>
-                            {/*  Mini Botones Rápidos en la Tarjeta */}
                             <div className="flex items-center gap-3 bg-black/40 rounded-lg p-1">
                               <button onClick={(e) => actualizarStockRapido(e, prod.id, prod.stock, -1)} className="w-7 h-7 flex items-center justify-center rounded-md bg-[#2c2c2e] hover:bg-[#3a3a3c] text-white transition">-</button>
                               <span className={`w-6 text-center text-sm font-bold ${prod.stock <= prod.stock_minimo ? 'text-red-400' : 'text-white'}`}>{prod.stock}</span>
@@ -166,7 +163,6 @@ export default function ProductosPage() {
                 ))}
             </div>
 
-            {/* Paginación */}
             {productos.length > 0 && (
                 <div className="flex justify-center items-center gap-6 mt-16 pb-10">
                   <button disabled={pagina === 1} onClick={() => setPagina(pagina - 1)} className="px-6 py-2 bg-[#1c1c1e] text-white rounded-xl disabled:opacity-30 border border-white/5 transition hover:bg-[#252528]">← Anterior</button>
@@ -176,7 +172,6 @@ export default function ProductosPage() {
             )}
       </main>
 
-      {/* Modal para crear producto */}
       {mostrarModalCrear && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
             <div className="bg-[#1c1c1e] w-full max-w-lg rounded-[2.5rem] border border-white/10 p-10 shadow-2xl animate-in zoom-in-95">
@@ -185,7 +180,6 @@ export default function ProductosPage() {
                     <StatusBox loading={loading} error={error} success={success} />
                     <input className="input-apple" type="text" placeholder="Nombre" required value={form.nombre} onChange={e => setForm({...form, nombre: e.target.value})} />
                     
-                    {/* Nuevo campo de Descripción */}
                     <textarea className="input-apple resize-none h-20" placeholder="Descripción breve (ej. Litro tapa azul)" value={form.descripcion} onChange={e => setForm({...form, descripcion: e.target.value})} />
 
                     <div className="grid grid-cols-2 gap-4">
@@ -198,9 +192,24 @@ export default function ProductosPage() {
                           <option value="Otros">Otros</option>
                       </select>
                     </div>
+                    
                     <div className="grid grid-cols-2 gap-4">
-                        <input className="input-apple" type="number" placeholder="Stock Inicial" required value={form.stock} onChange={e => setForm({...form, stock: e.target.value})} />
-                        <input className="input-apple" type="number" placeholder="Mínimo Alerta" required value={form.stock_minimo} onChange={e => setForm({...form, stock_minimo: e.target.value})} />
+                        <div>
+                           <label className="text-[10px] text-gray-500 font-bold uppercase tracking-widest ml-1 mb-1 block">Existencia actual</label>
+                           {/* 🔒 Se agregó min="0" y protección en el onChange */}
+                           <input className="input-apple" type="number" min="0" placeholder="0" required value={form.stock} onChange={e => {
+                             const val = e.target.value;
+                             if (val === '' || Number(val) >= 0) setForm({...form, stock: val});
+                           }} />
+                        </div>
+                        <div>
+                           <label className="text-[10px] text-red-500/80 font-bold uppercase tracking-widest ml-1 mb-1 block">Avisar si es menor a</label>
+                           {/* 🔒 Se agregó min="0" y protección en el onChange */}
+                           <input className="input-apple" type="number" min="0" placeholder="1" required value={form.stock_minimo} onChange={e => {
+                             const val = e.target.value;
+                             if (val === '' || Number(val) >= 0) setForm({...form, stock_minimo: val});
+                           }} />
+                        </div>
                     </div>
                     <div className="flex gap-3 pt-4">
                         <button type="button" onClick={() => setMostrarModalCrear(false)} className="flex-1 py-4 rounded-2xl border border-white/10 text-gray-400 font-bold transition hover:text-white">Cancelar</button>
